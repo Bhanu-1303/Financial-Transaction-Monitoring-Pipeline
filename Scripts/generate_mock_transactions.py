@@ -62,7 +62,10 @@ with open(OUTPUT_PATH, mode="w", newline="", encoding="utf-8") as file:
     for _ in range(NUM_TRANSACTIONS):
         transaction_id = str(uuid.uuid4())
         user_id = f"USER_{fake.random_int(min=1000, max=9999)}"
-        timestamp = fake.date_time_between(start_date="-1y", end_date="now")
+        timestamp = fake.date_time_between(
+            start_date="-1y",
+            end_date="now"
+        ).strftime("%Y-%m-%d %H:%M:%S")
         merchant_category = random.choice(merchant_categories)
         amount = round(random.uniform(1.00, 5000.00), 2)
         currency = random.choice(currencies)
