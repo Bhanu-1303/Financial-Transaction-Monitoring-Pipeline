@@ -13,7 +13,7 @@ DESTINATION_BLOB_NAME = "raw/mock_credit_card_transactions.csv"
 
 def upload_to_gcs(bucket_name, source_file_path, destination_blob_name):
     """
-    Uploads a local file to Google Cloud Storage.
+    Note: Uploads a local file to Google Cloud Storage.
     """
 
     if not source_file_path.exists():
