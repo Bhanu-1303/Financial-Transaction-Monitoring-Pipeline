@@ -28,14 +28,7 @@ Clean Native BigQuery Table
 
 ## Tools and Technologies Used
 
-Python
-Faker
-Google Cloud Storage
-BigQuery
-SQL
-Git
-GitHub
-VS Code
+Python, Faker, Google Cloud Storage, BigQuery, SQL, Git, GitHub, VS Code
 
 ## Dataset Description
 
