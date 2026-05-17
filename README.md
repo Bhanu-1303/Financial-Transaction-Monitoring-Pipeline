@@ -24,3 +24,29 @@ BigQuery External Table
 SQL Transformation
         ↓
 Clean Native BigQuery Table
+```
+
+## Tools and Technologies Used
+
+Python
+Faker
+Google Cloud Storage
+BigQuery
+SQL
+Git
+GitHub
+VS Code
+
+## Dataset Description
+
+The mock dataset contains 100,000 fake credit card transaction records.
+
+Columns included:
+
+Column	Description
+transaction_id	Unique ID for each transaction
+user_id	Fake user/customer ID
+timestamp	Date and time of the transaction
+merchant_category	Category of the merchant
+amount	Transaction amount
+currency	Currency used for the transaction
