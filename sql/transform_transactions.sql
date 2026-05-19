@@ -12,8 +12,7 @@ WITH
             SAFE_CAST(amount AS NUMERIC) AS amount,
             NULLIF(TRIM(currency), '') AS currency,
             CURRENT_TIMESTAMP AS ingestion_timestamp
-        FROM `project
-    -1efe30f5-674d-42ae-924.financial_transactions.ext_credict_card_transactions`
+        FROM `project-1efe30f5-674d-42ae-924.financial_transactions.ext_credict_card_transactions`
 
 ),
 
