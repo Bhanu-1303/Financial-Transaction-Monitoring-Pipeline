@@ -8,6 +8,11 @@ This pipeline will:
 4. Write cleaned records to BigQuery.
 """
 
+import argparse
+import csv
+import logging
+from datetime import datetime, timezone
+from io import StringIO
 
 CURRENCY_TO_USD = {
     "USD": 1.00,
@@ -28,3 +33,46 @@ BIGQUERY_SCHEMA = {
         {"name": "ingestion_timestamp", "type": "NUMERIC", "mode": "REQUIRED"},
     ]
 }
+
+
+def parse_csv_line(line):
+    """
+    Converting one CSV line into a cleaned transaction dictionary.
+
+    Invalid rows return None.
+    """
+
+    try:
+        reader = csv.DictReader(
+            StringIO(line),
+            fieldnames=[
+                "transaction_id",
+                "user_id",
+                "timestamp",
+                "merchant_category",
+                "amount",
+                "currency",
+            ],
+
+        )
+
+        row = next(reader)
+
+        transaction_id = row["transaction_id"].strip()
+        user_id = row["user_id"].strip()
+        timestamp_value = row["timestamp"].strip()
+        merchant_category = row["merchant_category"].strip()
+        currency = row["currency"].strip().upper()
+
+        if not transaction_id or not user_id or not currency:
+            return None
+
+        amount = float(row["amount"])
+
+        if amount < 0:
+            return None
+
+        if currency not in CURRENCY_TO_USD:
+            return None
+
+        amount_usd = round(amount * CURRENCY_TO_USD[currency], 2)
