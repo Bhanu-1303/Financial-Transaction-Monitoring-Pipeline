@@ -1,0 +1,2 @@
+-- Phase 2 reporting query
+-- This query will aggregate daily spending per user_id.
