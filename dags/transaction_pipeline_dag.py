@@ -106,8 +106,6 @@ with DAG(
             "staging_location": STAGING_LOCATION,
             "job_name": "transaction-dataflow-job-airflow",
         },
-        py_requirements=["apache-beam[gcp]"],
-        py_system_site_packages=False,
     )
 
     "Task 3 - Run daily user spending query."
