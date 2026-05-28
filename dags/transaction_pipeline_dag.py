@@ -13,6 +13,7 @@ from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectExistenceSensor
 from airflow.providers.apache.beam.operators.beam import BeamRunPythonPipelineOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
 
 PROJECT_ID = "project-1efe30f5-674d-42ae-924"
@@ -33,6 +34,28 @@ BQ_OUTPUT_TABLE = (
 
 TEMP_LOCATION = f"gs://{BUCKET_NAME}/temp/"
 STAGING_LOCATION = f"gs://{BUCKET_NAME}/staging/"
+
+CLEAN_TABLE = f"{PROJECT_ID}.financial_transactions.credit_card_transactions_clean_dataflow"
+REPORTING_TABLE = f"{PROJECT_ID}.financial_transactions.daily_user_spending"
+
+DAILY_SPENDING_QUERY = f"""
+CREATE OR REPLACE TABLE `{REPORTING_TABLE}` AS
+
+SELECT
+  DATE(transaction_timestamp) AS transaction_date,
+  user_id,
+  COUNT(*) AS transaction_count,
+  ROUND(SUM(amount_usd), 2) AS total_daily_spending_usd,
+  ROUND(AVG(amount_usd), 2) AS average_transaction_amount_usd,
+  CURRENT_TIMESTAMP() AS report_created_at
+FROM `{CLEAN_TABLE}`
+GROUP BY
+  transaction_date,
+  user_id
+ORDER BY
+  transaction_date,
+  user_id
+"""
 
 
 default_args = {
@@ -87,8 +110,21 @@ with DAG(
         py_system_site_packages=False,
     )
 
+    "Task 3 - Run daily user spending query."
+
+    run_daily_spending_query = BigQueryInsertJobOperator(
+        task_id="run_daily_spending_query",
+        configuration={
+            "query": {
+                "query": DAILY_SPENDING_QUERY,
+                "useLegacySql": False,
+            }
+        },
+        location="US",
+    )
+
     end = EmptyOperator(
         task_id="end_pipeline"
     )
 
-    start >> check_gcs_file >> trigger_dataflow_job >> end
+    start >> check_gcs_file >> trigger_dataflow_job >> run_daily_spending_query >> end
